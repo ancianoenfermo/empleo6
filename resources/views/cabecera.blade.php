@@ -1,159 +1,118 @@
-<nav class="bg-gray-800">
-
-    <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
-        <div class="relative flex items-center justify-between h-16">
-            <!-- Mobile menu button-->
-            <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
-                <button type="button"
-                    class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
-                    aria-controls="mobile-menu" aria-expanded="false">
-                    <span class="sr-only">Open main menu</span>
-                    <!--
-              Icon when menu is closed.
-
-              Heroicon name: outline/menu
-
-              Menu open: "hidden", Menu closed: "block"
-            -->
-                    <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                    <!--
-              Icon when menu is open.
-
-              Heroicon name: outline/x
-
-              Menu open: "block", Menu closed: "hidden"
-            -->
-                    <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
+<header class="bg-gray-800">
+    <div class="flex">
+        <div class="flex flex-col items-center justify-center ml-10">
+            <div class="mt-5">
+                <img class="block lg:hidden h-8 w-auto"
+                    src="https://tailwindui.com/img/logos/workflow-mark-indigo-500.svg" alt="Workflow">
+                <img class="hidden lg:block h-8 w-auto"
+                    src="https://tailwindui.com/img/logos/workflow-logo-indigo-500-mark-white-text.svg" alt="Workflow">
             </div>
-            {{-- Logo y menu --}}
-            <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
-                {{-- Logotipo --}}
-                <div class="flex-shrink-0 flex items-center">
-                    <img class="block lg:hidden h-8 w-auto"
-                        src="https://tailwindui.com/img/logos/workflow-mark-indigo-500.svg" alt="Workflow">
-                    <img class="hidden lg:block h-8 w-auto"
-                        src="https://tailwindui.com/img/logos/workflow-logo-indigo-500-mark-white-text.svg"
-                        alt="Workflow">
-                </div>
-                {{-- Menu Lg --}}
-                <div class="hidden sm:block sm:ml-6">
-                    <div class="flex space-x-4">
-                        <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
-                        <span class="bg-gray-900 text-white px-3 py-2 text-sm font-medium">
-                            Titulo
-                        </span>
 
-                    </div>
-                </div>
-            </div>
+        </div>
+        <div class="flex flex-col flex-1 text-center justify-end ">
+            <span class="text-white text-right mt-10 mr-10">Ofertas publidas en los últimos 30 días</span>
+           <h1 class="text-2xl font-semibold text-white">{{$titleH1}}</h1>
         </div>
     </div>
+    <div>
+        <nav>
+            {{-- AUTONOMIAS --}}
+            <form class="flex justify-center space-x-8 text-sm mt-10 " method="GET" action="{{ route('getJobs') }}">
+                <div class="form-group row text-gray-500 mt-5">
+                    <label class="text-white ml-2" for="">Autonomia</label>
+                    <select name="autonomia" class="form-control w-full bg-white-500 h-8 rounded-lg">
+                        <option value="" href="{{ route('getJobs') }}">Todas las Autonomías</option>
+                        @foreach ($autonomias as $autonomia)
+                            <option value="{{ $autonomia->id }}"
+                                href="{{ route('getJobs') . '/' . $autonomia->slug }}" @isset($selectedAutonomia) @if ($autonomia->slug == $selectedAutonomia) selected="selected" @endif @endisset>
+                                {{ $autonomia->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
 
 
+                {{-- PROVINCIAS --}}
 
+                <div class="form-group row text-gray-500 mt-5">
+                    <label class="text-white ml-2" for="">Provincia</label>
+                    <select name="provincia" class="form-control w-full bg-white-500 h-8  rounded-lg">
+                        @if (isset($selectedAutonomia))
+                            <option value="" href="{{ route('getJobs') . '/' . $selectedAutonomia }}">Todas las
+                                Provincias</option>
+                        @else
+                            <option value="" href="{{ route('getJobs') }}">Todas las Provincias</option>
+                        @endif
+                        @isset($provincias)
+                            @foreach ($provincias as $provincia)
+                                <option value="{{ $provincia->id }}"
+                                    href="{{ route('getJobs') . '/' . $selectedAutonomia . '/' . $provincia->slug }}"
+                                    @isset($selectedProvincia) @if ($provincia->slug == $selectedProvincia) selected="selected" @endif @endisset>
+                                    {{ $provincia->name }}
+                                </option>
+                            @endforeach
+                        @endisset
+                    </select>
+                </div>
 
-    {{-- AUTONOMIAS --}}
-    <form class="flex justify-center space-x-8 text-sm "  method="GET" action="{{ route('getJobs') }}">
-        <div class="form-group row text-gray-500 mt-5">
-            <label class="text-white ml-2" for="">Autonomia</label>
-            <select name="autonomia" class="form-control w-full bg-white-500 h-8 rounded-lg">
-                <option value="" href="{{ route('getJobs') }}">Todas las Autonomías</option>
-                @foreach ($autonomias as $autonomia)
-                    <option value="{{ $autonomia->id }}" href="{{ route('getJobs') . '/' . $autonomia->slug }}"
-                        @isset($selectedAutonomia) @if ($autonomia->slug == $selectedAutonomia) selected="selected" @endif @endisset>
-                        {{ $autonomia->name }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
+                {{-- LOCALIDADES --}}
 
+                <div class="form-group row text-gray-500 mt-5">
+                    <label class="text-white ml-2" for="">Localidad</label>
+                    <select name="localidad" class="form-control w-full bg-white-500 h-8 rounded-lg">
+                        @if (isset($selectedProvincia))
+                            <option value=""
+                                href="{{ route('getJobs') . '/' . $selectedAutonomia . '/' . $selectedProvincia }}">
+                                Todas las Localidades</option>
+                        @else
+                            <option value="" href="{{ route('getJobs') }}">Todas las Localidades</option>
+                        @endif
 
-        {{-- PROVINCIAS --}}
+                        @isset($localidades)
+                            @foreach ($localidades as $localidad)
+                                <option value="{{ $localidad->id }}"
+                                    href="{{ route('getJobs') . '/' . $selectedAutonomia . '/' . $selectedProvincia . '/' . $localidad->slug }}"
+                                    @isset($selectedLocalidad) @if ($localidad->slug == $selectedLocalidad) selected="selected" @endif @endisset>
+                                    {{ $localidad->name }}
+                                </option>
+                            @endforeach
+                        @endisset
+                    </select>
+                </div>
+                {{-- TIPO DE TRABAJO --}}
 
-        <div class="form-group row text-gray-500 mt-5">
-            <label class="text-white ml-2" for="">Provincia</label>
-            <select name="provincia" class="form-control w-full bg-white-500 h-8  rounded-lg">
-                @if (isset($selectedAutonomia))
-                    <option value="" href="{{ route('getJobs') . '/' . $selectedAutonomia }}">Todas las
-                        Provincias</option>
-                @else
-                    <option value="" href="{{ route('getJobs') }}">Todas las Provincias</option>
-                @endif
-                @isset($provincias)
-                    @foreach ($provincias as $provincia)
-                        <option value="{{ $provincia->id }}"
-                            href="{{ route('getJobs') . '/' . $selectedAutonomia . '/' . $provincia->slug }}"
-                            @isset($selectedProvincia) @if ($provincia->slug == $selectedProvincia) selected="selected" @endif @endisset>
-                            {{ $provincia->name }}
-                        </option>
-                    @endforeach
-                @endisset
-            </select>
-        </div>
+                <div class="form-group row text-gray-500 mt-5">
+                    <label class="text-white ml-2" for="">Tipo de trabajo</label>
+                    <select name="tipo" class="form-control w-full bg-white-500 h-8 rounded-lg">
+                            <option value="" >Todos los Trabajos</option>
+                            <option value="1" href="{{url()->current()}}?discapacidad=1" >Con discapacidad</option>
+                            <option value="2" href="{{url()->current()}}?practicas=1">En prácticas</option>
+                            <option value="3" href="{{url()->current()}}?teletrabajo=1" >Teletrabajo</option>
+                            <option value="4" href="{{url()->current()}}?ett=1">Ett</option>
 
-        {{-- LOCALIDADES --}}
+                    </select>
+                </div>
 
-        <div class="form-group row text-gray-500 mt-5" >
-            <label class="text-white ml-2" for="">Localidad</label>
-            <select name="localidad" class="form-control w-full bg-white-500 h-8 rounded-lg">
-                @if (isset($selectedProvincia))
-                    <option value=""
-                        href="{{ route('getJobs') . '/' . $selectedAutonomia . '/' . $selectedProvincia }}">
-                        Todas las Localidades</option>
-                @else
-                    <option value="" href="{{ route('getJobs') }}">Todas las Localidades</option>
-                @endif
-
-                @isset($localidades)
-                    @foreach ($localidades as $localidad)
-                        <option value="{{ $localidad->id }}"
-                            href="{{ route('getJobs') . '/' . $selectedAutonomia . '/' . $selectedProvincia . '/' . $localidad->slug }}"
-                            @isset($selectedLocalidad) @if ($localidad->slug == $selectedLocalidad) selected="selected" @endif @endisset>
-                            {{ $localidad->name }}
-                        </option>
-                    @endforeach
-                @endisset
-            </select>
-        </div>
-
-    </form>
-
-
-
-    <br>
-    <!-- Mobile menu, show/hide based on menu state. -->
-    <div class="sm:hidden" id="mobile-menu">
-        <div class="px-2 pt-2 pb-3 space-y-1">
-            <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
-            <a href="#" class="bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium"
-                aria-current="page">Dashboard</a>
-
-            <a href="#"
-                class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Team</a>
-
-            <a href="#"
-                class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Projects</a>
-
-            <a href="#"
-                class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Calendar</a>
-        </div>
+            </form>
+        </nav>
+        <br>
     </div>
-</nav>
+</header>
+
+
+
+
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
 <script type="text/javascript">
     $(document).on('change', 'select.form-control', function() {
         let get_val = event.target.selectedOptions[0].getAttribute("href");
+        if (!get_val) {
+            alert('hola')
+        }
+
+
         /*get_val = get_val + '/?dist=valor';
         console.log(get_val);
         */

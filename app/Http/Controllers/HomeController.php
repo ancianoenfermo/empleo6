@@ -8,7 +8,8 @@ use App\Models\Province;
 use App\Models\Region;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-
+use Illuminate\Support\Facades\Input;
+use Exception;
 
 class HomeController extends Controller
 {
@@ -22,11 +23,26 @@ class HomeController extends Controller
         $selectedProvincia = $provinciaUrl;
         $selectedLocalidad = $localidadUrl;
 
+
+
+
+
+
+
+
+
         # Todas las autonomias
         if (!$autonomiaUrl and !$provinciaUrl and !$localidadUrl) {
             $autonomias = $this->todasAutonomias();
-            $jobs = $this->todosJobs();
-            return view("home", compact('autonomias', 'jobs'));
+            try {
+                $parametro = array_keys($_GET);
+            } catch (Exception $e) {
+                $parametro = "";
+            }
+
+            $jobs = $this->todosJobs($parametro);
+            $titleH1 = "Empleos en España: encontradas " . $jobs->total() ." ofertas";
+            return view("home", compact('autonomias', 'jobs', 'titleH1'));
         }
 
 
@@ -36,8 +52,8 @@ class HomeController extends Controller
             $autonomiaSelObj = $this->getAutonomia($autonomiaUrl);
             $provincias = $this->provinciasDeAutonomia($autonomiaSelObj[0]);
             $jobs = $this->jobsFromAutonomia($autonomiaSelObj[0]);
-
-            return view("home", compact('autonomias', 'provincias', 'jobs', 'selectedAutonomia'));
+            $titleH1 = "Empleos en " . $autonomiaSelObj[0]->name .": encontradas " . $jobs->total() ." ofertas";
+            return view("home", compact('autonomias', 'provincias', 'jobs', 'selectedAutonomia','titleH1'));
         }
 
         # Una Provincia
@@ -48,7 +64,8 @@ class HomeController extends Controller
             $provinciaSelObj = $this->getProvincia($provinciaUrl);
             $localidades = $this->localidadesDeProvincia($provinciaSelObj[0]);
             $jobs = $this->jobsFromProvincia($provinciaSelObj[0]);
-            return view("home", compact('autonomias', 'provincias', 'localidades', 'jobs', 'selectedAutonomia', 'selectedProvincia'));
+            $titleH1 = "Empleos en " . $provinciaSelObj[0]->name .": encontradas " . $jobs->total() ." ofertas";
+            return view("home", compact('autonomias', 'provincias', 'localidades', 'jobs', 'selectedAutonomia', 'selectedProvincia','titleH1'));
         }
 
         # Una Localidad
@@ -59,7 +76,8 @@ class HomeController extends Controller
         $localidades = $this->localidadesDeProvincia($provinciaSelObj[0]);
         $localidadSelObj = $this->getLocalidad($localidadUrl);
         $jobs = $this->jobsFromLocalidad($localidadSelObj[0]);
-        return view("home", compact('autonomias', 'provincias','localidades', 'jobs', 'selectedAutonomia','selectedProvincia','selectedLocalidad'));
+        $titleH1 = "Empleos en " . $localidadSelObj[0]->name .": encontradas " . $jobs->total() ." ofertas";
+        return view("home", compact('autonomias', 'provincias','localidades', 'jobs', 'selectedAutonomia','selectedProvincia','selectedLocalidad','titleH1'));
 
     }
 
@@ -138,18 +156,23 @@ class HomeController extends Controller
 
 
 
-    private function todosJobs()
+    private function todosJobs($parametro)
     {
 
         if (request()->page) {
-            $key = 'todosJobs' . request()->page;
+            $key = 'todosJobs' . $parametro. request()->page;
         } else {
             $key = "todosJobs";
         }
-        if (Cache::has($key)) {
+        if (Cache::has("$key")) {
             $jobs = Cache::get($key);
         } else {
-            $jobs = Job::orderBy('orden')->paginate(5);
+            if ($parametro) {
+                $jobs = Job::discapacidad("1")->orderBy('orden')->paginate(5);
+            } else {
+                $jobs = Job::orderBy('orden')->paginate(5);
+            }
+
             Cache::put($key, $jobs);
         }
         return $jobs;

@@ -27,14 +27,39 @@ class Job extends Model
 
     public function scopeAutonomia($query,$autonomia) {
        if (trim($autonomia != "")) {
-        $query->where('autonomia_id',$autonomia);
+        return $query->where('autonomia_id',$autonomia);
 
        }
     }
 
     public function scopeProvincia($query,$provincia) {
         if(trim($provincia != "")) {
-            $query->where('province_id',$provincia);
+            return $query->where('province_id',$provincia);
+        }
+    }
+
+    public function scopeDiscapacidad($query,$discapacidad) {
+
+        if(trim($discapacidad != "")) {
+            return $query->where('discapacidad',$discapacidad);
+        }
+    }
+    public function scopeTeletrabajo($query,$teletrabajo) {
+        dd("estoy en Scope");
+        if(trim($teletrabajo != "")) {
+            return $query->where('teletrabajo',$teletrabajo);
+        }
+    }
+
+    public function scopePracticas($query,$practicas) {
+        if(trim($practicas != "")) {
+            return $query->where('practicas',$practicas);
+        }
+    }
+
+    public function scopeEtt($query,$ett) {
+        if(trim($ett != "")) {
+            return $query->where('ett',$ett);
         }
     }
 
