@@ -132,7 +132,8 @@ class populateDB extends Command
         if (strlen($llave) == 1) {
             $llave = "0".$llave;
         }
-        $llave = $llave.uniqid();
+        $randon = rand(10,100000);
+        $llave = $llave.strval($randon);
         $newJob->orden = $llave;
         //echo $llave.PHP_EOL;
         $newJob->datePosted = $date;
@@ -241,7 +242,7 @@ class populateDB extends Command
         $extension = pathinfo(storage_path($url), PATHINFO_EXTENSION);
         $filename = Str::uuid().'.'.$extension;
         $logo = Image::make($url);
-        $logo->resize(null, 35, function ($constraint) {
+        $logo->resize(70, null, function ($constraint) {
             $constraint->aspectRatio();
         });
         $logo->save(storage_path('app/public/logo_images/' . $filename));

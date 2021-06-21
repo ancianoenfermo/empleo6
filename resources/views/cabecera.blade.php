@@ -85,11 +85,11 @@
                     <label class="text-white ml-2" for="">Tipo de trabajo</label>
                     <select name="tipo" class="form-control w-full bg-white-500 h-8 rounded-lg">
                             <option value="" >Todos los Trabajos</option>
-                            <option value="1" href="{{url()->current()}}?discapacidad=1" >Con discapacidad</option>
+                            <option value="1" href="{{url()->current()}}?discapacidad=1"
+                                @isset($parametro) @if ($parametro == 'discapacidad' ) selected="selected" @endif @endisset
+                                 >Con discapacidad</option>
                             <option value="2" href="{{url()->current()}}?practicas=1">En prácticas</option>
                             <option value="3" href="{{url()->current()}}?teletrabajo=1" >Teletrabajo</option>
-                            <option value="4" href="{{url()->current()}}?ett=1">Ett</option>
-
                     </select>
                 </div>
 
